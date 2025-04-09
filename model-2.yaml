@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: model-2
+spec:
+  template:
+    spec:
+      volumes:
+        - name: model-results
+          persistentVolumeClaim:
+            claimName: json-storage
+      containers:
+        - name: model-2
+          image: model-2-dpt-est:latest  # Replace with your model's Docker image
+          imagePullPolicy: Never
+          volumeMounts:
+            - mountPath: "/app/data1"
+              name: model-results
+      restartPolicy: Never
+

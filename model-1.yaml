@@ -1,0 +1,55 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: owl-v2-model-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: owl-v2-model
+  template:
+    metadata:
+      labels:
+        app: owl-v2-model
+    spec:
+      containers:
+      - name: owl-v2-model
+        image: owl-v2-model1:2.0  # replace with your actual image
+        imagePullPolicy: Never
+        ports:
+          - containerPort: 8080
+        env:
+          - name: RESULT_FILE_PATH
+            value: "/app/data/results.json"  # the file where JSON results will be stored
+        volumeMounts:
+          - name: external-volume
+            mountPath: /app/data
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 20
+      volumes:
+        - name: external-volume
+          persistentVolumeClaim:
+            claimName: json-storage
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: owl-v2-model-service
+spec:
+  selector:
+    app: owl-v2-model
+  ports:
+    - port: 8080          # external port
+      targetPort: 8080  # container port
+  type: NodePort 

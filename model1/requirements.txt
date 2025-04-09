@@ -1,0 +1,10 @@
+accelerate
+requests
+torch
+torchvision
+transformers
+pillow
+scipy
+segment-anything
+opencv-python
+flask
